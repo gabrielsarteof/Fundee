@@ -1,19 +1,57 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { AuthService }            from './auth.service';
+import { LoginDto }               from './dto/login.dto';
+import { RegisterDto }            from './dto/register.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+} from '@nestjs/swagger';
 
-
+@ApiTags('auth')  
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Post('register')
+  @ApiOperation({ summary: 'Registrar novo usuário' })
+  @ApiResponse({ status: 201, description: 'Usuário registrado com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos.' })
+  async register(
+    @Body() registerDto: RegisterDto,
+  ) {
+    return this.authService.register(registerDto);
+  }
+
   @Post('request-nonce')
-  async getNonce(@Body() body: { address: string }) {
+  @ApiOperation({ summary: 'Solicitar nonce para autenticação' })
+  @ApiResponse({ status: 200, description: 'Nonce gerado com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Endereço inválido.' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        address: { type: 'string', example: '0x1234...ABCD' },
+      },
+    },
+  })
+  async getNonce(
+    @Body() body: { address: string },
+  ) {
     return this.authService.requestNonce(body.address);
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.verifySignature(loginDto.address, loginDto.signature);
+  @ApiOperation({ summary: 'Verificar assinatura e gerar JWT' })
+  @ApiResponse({ status: 200, description: 'JWT gerado com sucesso.' })
+  @ApiResponse({ status: 401, description: 'Assinatura inválida.' })
+  async login(
+    @Body() loginDto: LoginDto,
+  ) {
+    return this.authService.verifySignature(
+      loginDto.address,
+      loginDto.signature,
+    );
   }
 }
