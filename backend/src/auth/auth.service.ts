@@ -37,7 +37,6 @@ export class AuthService {
   // Método para verificar a assinatura e gerar o token
   async verifySignature(address: string, signature: string) {
     const user = await this.prisma.user.findUnique({ where: { address } });
-
     if (!user || !user.nonce) {
       this.logger.warn(`Login falhou: usuário inexistente ou nonce ausente [address=${address}]`);
       throw new UnauthorizedException({
@@ -47,7 +46,9 @@ export class AuthService {
       });
     }
 
-    const expectedMessage = `Login with wallet: ${address}`;
+    this.logger.log(`Esperando assinatura sobre ="${user.nonce}"`);
+
+    const expectedMessage = user.nonce;
     let signer: string;
 
     try {
