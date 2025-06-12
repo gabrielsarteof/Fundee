@@ -19,7 +19,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private userService: UserService,
-  ) {}
+  ) { }
 
   // Método para registrar um novo usuário
   async register(registerDto: RegisterDto) {
@@ -71,12 +71,13 @@ export class AuthService {
       });
     }
 
+    const token = this.jwtService.sign({ sub: user.id, address: user.address });
+
     await this.prisma.user.update({
       where: { address },
       data: { nonce: '' },
     });
 
-    const token = this.jwtService.sign({ sub: user.id, address: user.address });
     return { access_token: token };
   }
 

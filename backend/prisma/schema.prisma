@@ -15,16 +15,36 @@ datasource db {
 
 
 model User {
-  id        String   @id @default(uuid())
-  address   String   @unique
-  nonce     String
-  createdAt DateTime @default(now())
+  id          String         @id @default(uuid())
+  address     String         @unique
+  nonce       String?        
+  username    String?        @unique  
+  avatarUrl   String?        
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  page        Page?          
+  nfts        Nft[]          @relation("UserNFTs")
+  transactions Transaction[]  @relation("BuyerTransactions")
+}
 
-  // NFTs que esse usuário possui
-  nfts      Nft[]    @relation("UserNFTs")
-
-  // Transações em que o usuário foi comprador
-  transactions Transaction[] @relation("BuyerTransactions")
+model Page {
+  id           String    @id @default(uuid())
+  name         String    @unique
+  slug         String   @unique
+  ownerId      String    @unique
+  owner        User      @relation(fields: [ownerId], references: [id])
+  tagline      String?
+  description  String?   @db.Text
+  avatarUrl    String?
+  bannerUrl    String?
+  status       String    @default("draft")
+  category     String?
+  tags         String[]  
+  viewCount    Int       @default(0)
+  salesCount   Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  nfts         Nft[]
 }
 
 model Nft {
@@ -35,12 +55,14 @@ model Nft {
   price       Float
   ownerId     String
   owner       User     @relation("UserNFTs", fields: [ownerId], references: [id])
+  pageId      String?
+  page        Page?          @relation(fields: [pageId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  isListed     Boolean @default(false)
+  isListed    Boolean @default(false)
 
   transactions Transaction[]
-  blockchainData BlockchainData? // relação 1:1 (opcional)
+  blockchainData BlockchainData? 
 }
 
 model Transaction {

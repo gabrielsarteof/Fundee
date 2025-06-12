@@ -2,9 +2,6 @@
 import axios from 'axios';
 import type { paths } from '@/types/api-schema';
 
-// ─── Definições de tipos extraídos da spec ────────────────────────────────────
-
-// Payloads de request
 type CreateMetadataDto =
   paths['/nfts/generate-metadata']['post']['requestBody']['content']['application/json'];
 type RegisterNftDto =
@@ -12,16 +9,14 @@ type RegisterNftDto =
 type RegisterUserDto =
   paths['/auth/register']['post']['requestBody']['content']['application/json'];
 
-// Responses
 type RequestNonceResponse =
   paths['/auth/request-nonce']['post']['responses']['200']['content']['application/json'];
 type LoginResponse =
   paths['/auth/login']['post']['responses']['200']['content']['application/json'];
 
-// ─── Instância Axios ─────────────────────────────────────────────────────────
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  baseURL: 'http://localhost:3000/api/',
 });
 
 api.interceptors.request.use(config => {
@@ -34,8 +29,6 @@ api.interceptors.request.use(config => {
   return config;
 });
 
-// ─── Funções de API ────────────────────────────────────────────────────────────
-
 export async function requestNonce(
   address: string
 ): Promise<RequestNonceResponse> {
@@ -46,15 +39,16 @@ export async function requestNonce(
   return res.data;
 }
 
-export async function login(
-  address: string,
-  signature: string
-): Promise<LoginResponse> {
-  const res = await api.post<LoginResponse>(
-    '/auth/login',
-    { address, signature }
-  );
-  return res.data;
+export async function login(address: string, signature: string) {
+  const res = await api.post('/auth/login', { address, signature });
+  
+  // Mapeamento da resposta
+  const data = res.data;
+  const formattedData = {
+    accessToken: data.access_token,  
+  };
+
+  return formattedData;
 }
 
 export async function registerUser(
@@ -67,24 +61,33 @@ export async function registerUser(
   return res.data;
 }
 
-export async function generateMetadata(
-  dto: CreateMetadataDto
-): Promise<{ metadataUrl: string }> {
-  const res = await api.post<{ metadataUrl: string }>(
-    '/nfts/generate-metadata',
-    dto
-  );
-  return res.data;
+export async function generateMetadata(data: {
+  name: string;
+  description?: string;
+  image: string;
+}) {
+  const res = await fetch('/api/nfts/generate-metadata', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return res.json() as Promise<{ metadataUrl: string }>;
 }
 
-export async function registerNft(
-  dto: RegisterNftDto
-): Promise<unknown> {
-  const res = await api.post<unknown>(
-    '/nfts/register',
-    dto
-  );
-  return res.data;
+export async function registerNft(data: {
+  ownerAddress: string;
+  metadataUrl: string;
+  tokenId: string;
+  transactionHash: string;
+  blockHash: string;
+  price: number;
+}) {
+  const res = await fetch('/api/nfts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return res.json();
 }
 
 export default api;

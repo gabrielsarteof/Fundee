@@ -106,6 +106,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obter a única página do usuário */
+        get: operations["PageController_getMyPage"];
+        put?: never;
+        /** Criar nova página de criador */
+        post: operations["PageController_createPage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obter detalhes de uma página por ID */
+        get: operations["PageController_findOneById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/by-slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obter detalhes públicos de uma página por slug */
+        get: operations["PageController_findOneBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_getProfile"];
+        /** Atualizar perfil do usuário */
+        put: operations["UsersController_updateProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -175,6 +244,149 @@ export interface components {
             attributes?: components["schemas"]["Attribute"][];
         };
         RegisterNftDto: Record<string, never>;
+        CreatePageDto: {
+            /**
+             * @description Nome para exibição da página
+             * @example Galaxy Bay Official
+             */
+            name: string;
+            /**
+             * @description Slug único para URL (apenas minúsculas, números e hífens)
+             * @example galaxy-bay-official
+             */
+            slug: string;
+            /**
+             * @description Tagline curta da página
+             * @example O melhor lugar para explorar o universo NFT.
+             */
+            tagline?: string;
+            /**
+             * @description Descrição completa em texto ricco
+             * @example Aqui você encontra …
+             */
+            description?: string;
+            /**
+             * @description URL do avatar da página
+             * @example https://cdn.exemplo.com/avatar.png
+             */
+            avatarUrl?: string;
+            /**
+             * @description URL do banner da página
+             * @example https://cdn.exemplo.com/banner.jpg
+             */
+            bannerUrl?: string;
+            /**
+             * @description Status da página (p.ex.: 'draft', 'published')
+             * @example draft
+             */
+            status?: string;
+            /**
+             * @description Categoria da página
+             * @example arte digital
+             */
+            category?: string;
+            /**
+             * @description Tags associadas à página
+             * @example [
+             *       "nft",
+             *       "arte",
+             *       "galáxia"
+             *     ]
+             */
+            tags?: string[];
+        };
+        PageResponseDto: {
+            /**
+             * @description Identificador único da página
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Nome para exibição da página
+             * @example Galaxy Bay Official
+             */
+            name: string;
+            /**
+             * @description Slug único para URL
+             * @example galaxy-bay-official
+             */
+            slug: string;
+            /**
+             * @description Tagline curta da página
+             * @example O melhor lugar para explorar o universo NFT.
+             */
+            tagline?: string;
+            /**
+             * @description Descrição completa em texto rico
+             * @example Aqui você encontra …
+             */
+            description?: string;
+            /**
+             * @description URL do avatar da página
+             * @example https://cdn.exemplo.com/avatar.png
+             */
+            avatarUrl?: string;
+            /**
+             * @description URL do banner da página
+             * @example https://cdn.exemplo.com/banner.jpg
+             */
+            bannerUrl?: string;
+            /**
+             * @description Status da página (por exemplo: 'draft', 'published')
+             * @example draft
+             */
+            status?: string;
+            /**
+             * @description Categoria da página
+             * @example arte digital
+             */
+            category?: string;
+            /**
+             * @description Tags associadas à página
+             * @example [
+             *       "nft",
+             *       "arte",
+             *       "galáxia"
+             *     ]
+             */
+            tags?: string[];
+            /**
+             * @description Total de visualizações da página
+             * @example 123
+             */
+            viewCount: number;
+            /**
+             * @description Total de inscritos na página
+             * @example 45
+             */
+            salesCount: number;
+            /**
+             * Format: date-time
+             * @description Data de criação da página
+             * @example 2025-05-11T14:23:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Data da última atualização da página
+             * @example 2025-05-12T08:30:00.000Z
+             */
+            updatedAt: string;
+        };
+        UpdateProfileDto: {
+            /** @example Alice */
+            displayName?: string;
+            /** @example alice123 */
+            username?: string;
+            /** @example Desenvolvedora e colecionadora de NFTs. */
+            bio?: string;
+            /** @example São Paulo, Brasil */
+            location?: string;
+            /** @example https://.../avatar.png */
+            avatarUrl?: string;
+            /** @example https://.../banner.png */
+            bannerUrl?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -358,6 +570,155 @@ export interface operations {
             };
             /** @description Não autorizado. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PageController_getMyPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página retornada com sucesso. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+        };
+    };
+    PageController_createPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePageDto"];
+            };
+        };
+        responses: {
+            /** @description Página criada com sucesso. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Conflito: name ou slug já existe. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PageController_findOneById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Detalhes da página. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Página não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PageController_findOneBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Detalhes da página. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageResponseDto"];
+                };
+            };
+            /** @description Página não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_getProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Perfil do usuário retornado com sucesso. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_updateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProfileDto"];
+            };
+        };
+        responses: {
+            /** @description Perfil atualizado com sucesso. */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

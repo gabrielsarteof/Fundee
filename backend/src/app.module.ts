@@ -7,6 +7,9 @@ import { UsersModule } from './user/user.module';
 import { NftModule } from './nft/nft.module';
 import { PrismaModule } from '../prisma/prisma.module';   
 import { validationSchema } from './config/validation';
+import { PageModule } from './pages/page.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -15,10 +18,15 @@ import { validationSchema } from './config/validation';
       validationSchema,
       envFilePath: ['.env.development.local', '.env'],
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     PrismaModule,
     AuthModule,
-    UsersModule,
     NftModule,
+    PageModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

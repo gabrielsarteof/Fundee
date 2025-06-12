@@ -15,7 +15,7 @@ const categories = [
 export default function CategoryTabs() {
   const [active, setActive] = useState(categories[0]);
   return (
-    <div className="flex space-x-2 px-6 py-4 overflow-x-auto ml-64 bg-gray-50">
+    <div className="flex w-full justify-between space-x-2 px-6 py-4 bg-gray-50">
       {categories.map(cat => (
         <button
           key={cat}
